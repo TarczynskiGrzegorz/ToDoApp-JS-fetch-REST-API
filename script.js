@@ -145,11 +145,21 @@ document.addEventListener('DOMContentLoaded', function () {
             const button1 = document.createElement("button");
             button1.innerText = "+15 m";
             button1.className = "btn btn-outline-success btn-sm mr-2";
+            button1.addEventListener("click", function (){
+                apiUpdateOperation(operationId, operationDescription, timeSpent+15);
+                timeSpent=timeSpent+15;
+                time.innerText = convertMinToH(timeSpent);
+            })
             divButtons.appendChild(button1);
 
             const button2 = document.createElement("button");
             button2.innerText = "+1 h";
             button2.className = "btn btn-outline-success btn-sm mr-2";
+            button2.addEventListener("click", function (){
+                apiUpdateOperation(operationId, operationDescription, timeSpent+60);
+                timeSpent=timeSpent+60;
+                time.innerText = convertMinToH(timeSpent);
+            })
             divButtons.appendChild(button2);
 
             const button3 = document.createElement("button");
@@ -225,6 +235,22 @@ document.addEventListener('DOMContentLoaded', function () {
                 alert('Cos nei tak z dodaniem operacji')
             }
             return resp.json();
+        })
+    }
+
+    function apiUpdateOperation(operationId, description, timeSpent){
+        return fetch(apihost + '/api/operations/' + operationId,{
+            headers:{
+                Authorization: apikey,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({description: description, timeSpent: timeSpent}),
+            method: 'PUT'
+        }).then(function (resp){
+            if(!resp.ok){
+                alert("dodawanie czasu operacji - cos poszlo nie tak")
+            }
+            return resp;
         })
     }
 });
