@@ -50,6 +50,18 @@ document.addEventListener('DOMContentLoaded', function () {
         const buttonFinish = document.createElement("button");
         buttonFinish.className = "btn btn-dark btn-sm";
         buttonFinish.innerText = "Finish";
+        buttonFinish.addEventListener("click",function (){
+            apiUpdateTask(id, title, description, 'closed');
+            rightDiv.removeChild(buttonFinish);
+            console.log(ul.children);
+            Array.from(ul.children).forEach(function (liEl){
+                const buttons = liEl.lastElementChild;
+                liEl.removeChild(buttons);
+            })
+
+
+
+        })
         const buttonDelete = document.createElement("button");
         buttonDelete.className = "btn btn-outline-danger btn-sm ml-2";
         buttonDelete.innerText = "Delete";
@@ -145,9 +157,9 @@ document.addEventListener('DOMContentLoaded', function () {
             const button1 = document.createElement("button");
             button1.innerText = "+15 m";
             button1.className = "btn btn-outline-success btn-sm mr-2";
-            button1.addEventListener("click", function (){
-                apiUpdateOperation(operationId, operationDescription, timeSpent+15);
-                timeSpent=timeSpent+15;
+            button1.addEventListener("click", function () {
+                apiUpdateOperation(operationId, operationDescription, timeSpent + 15);
+                timeSpent = timeSpent + 15;
                 time.innerText = convertMinToH(timeSpent);
             })
             divButtons.appendChild(button1);
@@ -155,9 +167,9 @@ document.addEventListener('DOMContentLoaded', function () {
             const button2 = document.createElement("button");
             button2.innerText = "+1 h";
             button2.className = "btn btn-outline-success btn-sm mr-2";
-            button2.addEventListener("click", function (){
-                apiUpdateOperation(operationId, operationDescription, timeSpent+60);
-                timeSpent=timeSpent+60;
+            button2.addEventListener("click", function () {
+                apiUpdateOperation(operationId, operationDescription, timeSpent + 60);
+                timeSpent = timeSpent + 60;
                 time.innerText = convertMinToH(timeSpent);
             })
             divButtons.appendChild(button2);
@@ -165,7 +177,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const button3 = document.createElement("button");
             button3.innerText = "Delete";
             button3.className = "btn btn-outline-danger btn-sm";
-            button3.addEventListener("click",function (){
+            button3.addEventListener("click", function () {
                 apiDeleteOperation(operationId);
                 operationList.removeChild(li);
             })
@@ -242,31 +254,47 @@ document.addEventListener('DOMContentLoaded', function () {
         })
     }
 
-    function apiUpdateOperation(operationId, description, timeSpent){
-        return fetch(apihost + '/api/operations/' + operationId,{
-            headers:{
+    function apiUpdateOperation(operationId, description, timeSpent) {
+        return fetch(apihost + '/api/operations/' + operationId, {
+            headers: {
                 Authorization: apikey,
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({description: description, timeSpent: timeSpent}),
             method: 'PUT'
-        }).then(function (resp){
-            if(!resp.ok){
+        }).then(function (resp) {
+            if (!resp.ok) {
                 alert("dodawanie czasu operacji - cos poszlo nie tak")
             }
             return resp;
         })
     }
 
-    function apiDeleteOperation(operationId){
-        fetch(apihost+'/api/operations/'+operationId,{
-            headers:{
+    function apiDeleteOperation(operationId) {
+        fetch(apihost + '/api/operations/' + operationId, {
+            headers: {
                 Authorization: apikey
             },
             method: 'DELETE'
+        }).then(function (resp) {
+            if (!resp.ok) {
+                alert("Usuwanie - coś poszło nie tak");
+            }
+            return resp;
+        })
+    }
+
+    function apiUpdateTask(taskId, title, description, status) {
+        fetch(apihost + '/api/tasks/' + taskId, {
+            headers: {
+                Authorization: apikey,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({title: title, description: description, status: status}),
+            method: 'PUT'
         }).then(function (resp){
             if(!resp.ok){
-                alert("Usuwanie - coś poszło nie tak");
+                alert("Aktualizacja zadania - cos poszlo nie tak")
             }
             return resp;
         })
