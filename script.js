@@ -165,6 +165,10 @@ document.addEventListener('DOMContentLoaded', function () {
             const button3 = document.createElement("button");
             button3.innerText = "Delete";
             button3.className = "btn btn-outline-danger btn-sm";
+            button3.addEventListener("click",function (){
+                apiDeleteOperation(operationId);
+                operationList.removeChild(li);
+            })
             divButtons.appendChild(button3);
         }
 
@@ -249,6 +253,20 @@ document.addEventListener('DOMContentLoaded', function () {
         }).then(function (resp){
             if(!resp.ok){
                 alert("dodawanie czasu operacji - cos poszlo nie tak")
+            }
+            return resp;
+        })
+    }
+
+    function apiDeleteOperation(operationId){
+        fetch(apihost+'/api/operations/'+operationId,{
+            headers:{
+                Authorization: apikey
+            },
+            method: 'DELETE'
+        }).then(function (resp){
+            if(!resp.ok){
+                alert("Usuwanie - coś poszło nie tak");
             }
             return resp;
         })
