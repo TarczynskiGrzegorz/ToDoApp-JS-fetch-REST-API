@@ -20,6 +20,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     apiListTasks().then(
         function (obj) {
+            console.log(obj);
             obj.data.forEach(
                 function (task) {
                     renderTask(task.id, task.title, task.description, task.status)
@@ -52,7 +53,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const buttonDelete = document.createElement("button");
         buttonDelete.className = "btn btn-outline-danger btn-sm ml-2";
         buttonDelete.innerText = "Delete";
-        buttonDelete.addEventListener("click",function (){
+        buttonDelete.addEventListener("click", function () {
             console.log('usuwanie');
             apiDeleteTask(id);
             document.querySelector("main").removeChild(section);
@@ -68,7 +69,7 @@ document.addEventListener('DOMContentLoaded', function () {
             obj.data.forEach(function (operation) {
                 renderOperation(ul, status, operation.id, operation.description, operation.timeSpent);
             });
-            // console.log(obj);
+            console.log(obj);
         });
 
         const divForm = document.createElement("div");
@@ -87,6 +88,7 @@ document.addEventListener('DOMContentLoaded', function () {
         input.placeholder = "Operation description";
         input.className = "form-control";
         input.minLength = "5";
+        input.id = "operationDescription";
         divInput.appendChild(input);
 
         const divButton = document.createElement("div");
@@ -98,11 +100,12 @@ document.addEventListener('DOMContentLoaded', function () {
         buttonAdd.innerText = "Add";
         divButton.appendChild(buttonAdd);
 
-        form.addEventListener("submit",function(event){
+        form.addEventListener("submit", function (event) {
             event.preventDefault();
-            apiCreateOperationForTask(id, input.value);
-            console.log(input.value);
-            console.log(id);
+            apiCreateOperationForTask(id, this.elements[0].value).then(function (obj) {
+                renderOperation(ul, status, obj.data.id, obj.data.description, obj.data.timeSpent)
+                console.log(obj);
+            });
         })
 
     }
@@ -209,21 +212,19 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    function apiCreateOperationForTask(taskId, description){
-        return fetch(apihost + '/api/tasks/'+taskId+'/operations',{
-            headers:{
+    function apiCreateOperationForTask(taskId, description) {
+        return fetch(apihost + '/api/tasks/' + taskId + '/operations', {
+            headers: {
                 Authorization: apikey,
-                'Content-Type' : 'application/json'
+                'Content-Type': 'application/json'
             },
-            body: JSON.stringify({description: description, timeSpent : 0}),
+            body: JSON.stringify({description: description, timeSpent: 0}),
             method: 'POST'
-        }).then(function(resp){
-            if(!resp.ok){
+        }).then(function (resp) {
+            if (!resp.ok) {
                 alert('Cos nei tak z dodaniem operacji')
             }
             return resp.json();
-        }).then(function(obj){
-            // console.log(obj);
         })
     }
 });
