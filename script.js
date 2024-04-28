@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(
                 function (resp) {
                     if (!resp.ok) {
-                        alert('Wystapil blad! Otwórz zakladke devtools i zakładkę Sieć / Network - sciaganie wszystkich');
+                        alert("Get list tasks error - something went wrong. Open DevTools -> network to see details.");
                     }
                     return resp.json();
                 }
@@ -46,22 +46,24 @@ document.addEventListener('DOMContentLoaded', function () {
         h6Description.innerText = description;
         h6Description.className = "card-subtitle text-muted";
         leftDiv.append(h5Title, h6Description);
+        if (status === "open") {
+            const buttonFinish = document.createElement("button");
+            buttonFinish.className = "btn btn-dark btn-sm";
+            buttonFinish.innerText = "Finish";
+            buttonFinish.addEventListener("click", function () {
+                apiUpdateTask(id, title, description, 'closed');
+                rightDiv.removeChild(buttonFinish);
+                console.log(ul.children);
+                Array.from(ul.children).forEach(function (liEl) {
+                    const buttons = liEl.lastElementChild;
+                    liEl.removeChild(buttons);
+                })
 
-        const buttonFinish = document.createElement("button");
-        buttonFinish.className = "btn btn-dark btn-sm";
-        buttonFinish.innerText = "Finish";
-        buttonFinish.addEventListener("click",function (){
-            apiUpdateTask(id, title, description, 'closed');
-            rightDiv.removeChild(buttonFinish);
-            console.log(ul.children);
-            Array.from(ul.children).forEach(function (liEl){
-                const buttons = liEl.lastElementChild;
-                liEl.removeChild(buttons);
+
             })
+            rightDiv.append(buttonFinish);
+        }
 
-
-
-        })
         const buttonDelete = document.createElement("button");
         buttonDelete.className = "btn btn-outline-danger btn-sm ml-2";
         buttonDelete.innerText = "Delete";
@@ -71,7 +73,7 @@ document.addEventListener('DOMContentLoaded', function () {
             document.querySelector("main").removeChild(section);
 
         })
-        rightDiv.append(buttonFinish, buttonDelete);
+        rightDiv.append(buttonDelete);
 
         const ul = document.createElement("ul");
         ul.className = "list-group list-group-flush";
@@ -187,7 +189,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function convertMinToH(valueInMin) {
-        const h = (valueInMin / 60).toFixed(0);
+        const h = Math.floor(valueInMin / 60).toFixed(0);
         const min = (valueInMin % 60).toFixed(0);
         return h + "h " + min + "min";
     }
@@ -205,7 +207,7 @@ document.addEventListener('DOMContentLoaded', function () {
         ).then(
             function (resp) {
                 if (!resp.ok) {
-                    alert("Wystąpił błąd! Otwórz devtools i zakładkę Sieć/Network, i poszukaj przyczyny apiCreateTask");
+                    alert("Create task error - something went wrong. Open DevTools -> network to see details.");
                 }
                 return resp.json();
             }
@@ -232,7 +234,7 @@ document.addEventListener('DOMContentLoaded', function () {
             method: 'DELETE'
         }).then(function (resp) {
             if (!resp.ok) {
-                alert("cos poszlo nie tak");
+                alert("Delete task error - something went wrong");
             }
             return resp;
         });
@@ -264,7 +266,7 @@ document.addEventListener('DOMContentLoaded', function () {
             method: 'PUT'
         }).then(function (resp) {
             if (!resp.ok) {
-                alert("dodawanie czasu operacji - cos poszlo nie tak")
+                alert("Create operation for task error - something went wrong. Open DevTools -> network to see details.")
             }
             return resp;
         })
@@ -278,7 +280,7 @@ document.addEventListener('DOMContentLoaded', function () {
             method: 'DELETE'
         }).then(function (resp) {
             if (!resp.ok) {
-                alert("Usuwanie - coś poszło nie tak");
+                alert("Delete operation error - something went wrong. Open DevTools -> network to see details.");
             }
             return resp;
         })
@@ -292,9 +294,9 @@ document.addEventListener('DOMContentLoaded', function () {
             },
             body: JSON.stringify({title: title, description: description, status: status}),
             method: 'PUT'
-        }).then(function (resp){
-            if(!resp.ok){
-                alert("Aktualizacja zadania - cos poszlo nie tak")
+        }).then(function (resp) {
+            if (!resp.ok) {
+                alert("Update task error - something went wrong. Open DevTools -> network to see details.")
             }
             return resp;
         })
